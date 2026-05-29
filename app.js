@@ -113,9 +113,8 @@ function getSchedule() {
 }
 
 function updateProgress(card) {
-  const checks = [...card.querySelectorAll("input[type='checkbox']")];
-  const done = checks.filter((check) => check.checked).length;
-  card.querySelector(".progress-pill").textContent = `${done}/${checks.length} done`;
+  const stats = getDayProgress(Number(card.dataset.day));
+  card.querySelector(".progress-pill").textContent = `${stats.done}/${stats.total} done`;
   updateTabProgress();
 }
 
@@ -143,9 +142,22 @@ function render() {
 
           checkbox.checked = localStorage.getItem(key) === "true";
           checkbox.addEventListener("change", () => {
+            if (checkbox.checked && isConditionalTask(slot.slotIndex, taskIndex)) {
+              getConditionalTaskIndexes(slot.slotIndex)
+                .filter((conditionalTaskIndex) => conditionalTaskIndex !== taskIndex)
+                .forEach((conditionalTaskIndex) => {
+                  const otherKey = getTaskKey(day.dayIndex, slot.slotIndex, conditionalTaskIndex);
+                  localStorage.removeItem(otherKey);
+                  const otherCheck = dayNode.querySelector(`[data-task-key="${otherKey}"]`);
+                  if (otherCheck) {
+                    otherCheck.checked = false;
+                  }
+                });
+            }
             localStorage.setItem(key, checkbox.checked);
             updateProgress(dayNode);
           });
+          checkbox.dataset.taskKey = key;
 
           const savedText = localStorage.getItem(`${key}-text`) || task;
           if (savedText.toLowerCase().includes("special instruction")) {
@@ -229,13 +241,39 @@ function updateTabProgress() {
 }
 
 function getDayProgress(dayIndex) {
-  const total = taskGroups.reduce((sum, group) => sum + group.tasks.length, 0);
+  const total = taskGroups.reduce((sum, group, slotIndex) => {
+    return sum + group.tasks.length - getConditionalAdjustment(slotIndex);
+  }, 0);
   const done = taskGroups.reduce((sum, group, slotIndex) => {
+    if (getConditionalTaskIndexes(slotIndex).length) {
+      const requiredTasks = group.tasks.length - getConditionalTaskIndexes(slotIndex).length;
+      const requiredDone = group.tasks
+        .slice(0, requiredTasks)
+        .filter((_, taskIndex) => localStorage.getItem(getTaskKey(dayIndex, slotIndex, taskIndex)) === "true").length;
+      const conditionalDone = getConditionalTaskIndexes(slotIndex).some((taskIndex) => {
+        return localStorage.getItem(getTaskKey(dayIndex, slotIndex, taskIndex)) === "true";
+      }) ? 1 : 0;
+      return sum + requiredDone + conditionalDone;
+    }
+
     return sum + group.tasks.filter((_, taskIndex) => {
       return localStorage.getItem(getTaskKey(dayIndex, slotIndex, taskIndex)) === "true";
     }).length;
   }, 0);
   return { done, total };
+}
+
+function getConditionalTaskIndexes(slotIndex) {
+  return slotIndex === 1 ? [1, 2] : [];
+}
+
+function getConditionalAdjustment(slotIndex) {
+  const conditionalTasks = getConditionalTaskIndexes(slotIndex);
+  return conditionalTasks.length ? conditionalTasks.length - 1 : 0;
+}
+
+function isConditionalTask(slotIndex, taskIndex) {
+  return getConditionalTaskIndexes(slotIndex).includes(taskIndex);
 }
 
 resetProgress.addEventListener("click", () => {
