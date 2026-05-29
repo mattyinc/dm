@@ -812,10 +812,10 @@ pre code {
   position: relative;
   display: grid;
   min-height: 150px;
-  align-content: end;
-  gap: 8px;
+  align-content: start;
+  gap: 10px;
   overflow: hidden;
-  padding: 24px;
+  padding: 22px 24px 24px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -845,13 +845,19 @@ pre code {
   font-weight: 600;
 }
 
-.resource-icon {
-  position: absolute;
-  top: 18px;
-  left: 20px;
+.resource-head {
   display: flex;
-  width: 38px;
-  height: 38px;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding-right: 74px;
+}
+
+.resource-icon {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
@@ -860,8 +866,8 @@ pre code {
 }
 
 .resource-icon svg {
-  width: 21px;
-  height: 21px;
+  width: 19px;
+  height: 19px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -875,6 +881,7 @@ pre code {
 }
 
 .resource-card strong {
+  margin-top: 4px;
   color: var(--heading);
   font-family: var(--serif);
   font-size: 1.22rem;
