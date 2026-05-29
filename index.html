@@ -102,7 +102,7 @@
             <li>Stop the <code>DM.SERVICE.CONTROL</code> DSC of the running service.</li>
             <li>
               Get the unprocessed pending records from the DM service work file, <code>F.DM.SERVICE.DATA.FILE</code>. Directly from the database, using SSMS or DbBeaver, run:
-              <pre><code>SELECT * FROM F_DM_SERVICE_DATA_F000</code></pre>
+              <pre><code>SELECT XMLRECORD FROM F_DM_SERVICE_DATA_F000</code></pre>
             </li>
             <li>Export the result to CSV and share it with Aspire.</li>
             <li>
