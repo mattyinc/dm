@@ -713,6 +713,12 @@ select:hover {
   scroll-margin-top: 24px;
 }
 
+.important-links {
+  display: grid;
+  gap: 16px;
+  margin-top: 46px;
+}
+
 .section-heading h2 {
   margin: 8px 0 0;
   font-family: var(--serif);
@@ -794,6 +800,90 @@ pre code {
   color: var(--teal-dark);
   font-weight: 600;
   text-underline-offset: 3px;
+}
+
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.resource-card {
+  position: relative;
+  display: grid;
+  min-height: 150px;
+  align-content: end;
+  gap: 8px;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 14px 34px rgba(38, 32, 24, 0.07);
+}
+
+.resource-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: var(--teal);
+}
+
+.resource-card::after {
+  content: "Open";
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.resource-card:hover {
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+  transform: translateY(-1px);
+}
+
+.resource-card strong {
+  color: var(--heading);
+  font-family: var(--serif);
+  font-size: 1.22rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.resource-card span:last-child {
+  max-width: 440px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.resource-type {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal) 12%, transparent);
+  color: var(--teal-dark);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.incident-ticket::before {
+  background: var(--orange);
+}
+
+.incident-ticket .resource-type {
+  background: color-mix(in srgb, var(--orange) 14%, transparent);
+  color: color-mix(in srgb, var(--orange) 72%, var(--ink));
 }
 
 @media (max-width: 820px) {
@@ -906,5 +996,14 @@ pre code {
 
   .task-item span {
     font-size: 0.9rem;
+  }
+
+  .link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-card {
+    min-height: 134px;
+    padding: 20px;
   }
 }
