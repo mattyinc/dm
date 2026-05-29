@@ -61,6 +61,9 @@ const prevDay = document.querySelector("#prevDay");
 const nextDay = document.querySelector("#nextDay");
 const resetProgress = document.querySelector("#resetProgress");
 const themeToggle = document.querySelector("#themeToggle");
+const progressLabel = document.querySelector("#progressLabel");
+const progressCount = document.querySelector("#progressCount");
+const progressFill = document.querySelector("#progressFill");
 let selectedDayIndex = Number(localStorage.getItem("kt-selected-day") || 0);
 
 function parseCstDateTime(dateString, timeString) {
@@ -213,16 +216,26 @@ function updateDayControls() {
 }
 
 function updateTabProgress() {
+  const selectedStats = getDayProgress(selectedDayIndex);
+  progressLabel.textContent = `File ${fileNumber(selectedDayIndex)} progress`;
+  progressCount.textContent = `${selectedStats.done}/${selectedStats.total} complete`;
+  progressFill.style.width = `${selectedStats.total ? (selectedStats.done / selectedStats.total) * 100 : 0}%`;
+
   document.querySelectorAll(".day-tab").forEach((tab) => {
     const dayIndex = Number(tab.dataset.day);
-    const total = taskGroups.reduce((sum, group) => sum + group.tasks.length, 0);
-    const done = taskGroups.reduce((sum, group, slotIndex) => {
-      return sum + group.tasks.filter((_, taskIndex) => {
-        return localStorage.getItem(getTaskKey(dayIndex, slotIndex, taskIndex)) === "true";
-      }).length;
-    }, 0);
+    const { done, total } = getDayProgress(dayIndex);
     tab.querySelector("em").textContent = `File ${fileNumber(dayIndex)} - ${done}/${total}`;
   });
+}
+
+function getDayProgress(dayIndex) {
+  const total = taskGroups.reduce((sum, group) => sum + group.tasks.length, 0);
+  const done = taskGroups.reduce((sum, group, slotIndex) => {
+    return sum + group.tasks.filter((_, taskIndex) => {
+      return localStorage.getItem(getTaskKey(dayIndex, slotIndex, taskIndex)) === "true";
+    }).length;
+  }, 0);
+  return { done, total };
 }
 
 resetProgress.addEventListener("click", () => {

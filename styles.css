@@ -158,7 +158,7 @@ main {
   position: relative;
   display: block;
   width: 50px;
-  height: 28px;
+  height: 30px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
   border-radius: 999px;
@@ -171,7 +171,7 @@ main {
 
 .switch-thumb {
   position: absolute;
-  top: 3px;
+  top: 4px;
   left: 3px;
   z-index: 2;
   width: 22px;
@@ -373,13 +373,57 @@ main {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
-  margin-bottom: 28px;
+  margin-bottom: 12px;
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: color-mix(in srgb, var(--paper) 88%, transparent);
   box-shadow: 0 10px 28px rgba(38, 32, 24, 0.05);
   backdrop-filter: blur(18px);
+}
+
+.day-progress {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 28px;
+  padding: 0 2px;
+}
+
+.progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.progress-copy span {
+  color: var(--teal-dark);
+  font-weight: 600;
+}
+
+.progress-copy strong {
+  color: var(--heading);
+  font-size: 0.86rem;
+  font-weight: 550;
+}
+
+.progress-track {
+  overflow: hidden;
+  height: 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-soft) 72%, var(--surface));
+}
+
+.progress-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--teal), var(--orange));
+  transition: width 220ms ease;
 }
 
 .day-tabs {
@@ -840,6 +884,10 @@ pre code {
     gap: 8px;
     margin-bottom: 18px;
     padding: 10px;
+  }
+
+  .day-progress {
+    margin-bottom: 20px;
   }
 
   .round-button {
