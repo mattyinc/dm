@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>APC Handoff</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500;700&family=Inter:wght@400;500;650;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <nav class="topbar" aria-label="Workspace">
+        <a class="brand" href="./" aria-label="APC Handoff home">
+          <span>APC Handoff</span>
+        </a>
+        <div class="nav-links" aria-label="Page sections">
+          <a href="./">Home</a>
+          <a href="#schedule">Checklist</a>
+          <a href="#special-instructions">Special</a>
+        </div>
+        <button id="themeToggle" class="theme-switch" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+          <span class="switch-track" aria-hidden="true">
+            <span class="switch-icon switch-sun">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 4V2"></path>
+                <path d="M12 22v-2"></path>
+                <path d="m4.93 4.93-1.41-1.41"></path>
+                <path d="m20.48 20.48-1.41-1.41"></path>
+                <path d="M4 12H2"></path>
+                <path d="M22 12h-2"></path>
+                <path d="m4.93 19.07-1.41 1.41"></path>
+                <path d="m20.48 3.52-1.41 1.41"></path>
+                <circle cx="12" cy="12" r="4"></circle>
+              </svg>
+            </span>
+            <span class="switch-icon switch-moon">
+              <svg viewBox="0 0 24 24">
+                <path d="M20.4 14.7A8 8 0 0 1 9.3 3.6a8.6 8.6 0 1 0 11.1 11.1Z"></path>
+              </svg>
+            </span>
+            <span class="switch-thumb"></span>
+          </span>
+        </button>
+      </nav>
+
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">One week handover</p>
+          <h1 id="pageTitle"><span>APC AS66</span> DM run</h1>
+          <p class="hero-text">
+            A quiet checklist for the five-night support window, starting Monday at 9:00 PM CST with IST shown beside every action.
+          </p>
+        </div>
+
+        <div class="timezone-panel">
+          <span class="panel-kicker">Start point</span>
+          <div class="time-pair">
+            <strong>Mon 9:00 PM CST</strong>
+            <span>Tue 8:30 AM IST</span>
+          </div>
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <section class="day-picker" aria-label="Choose handover day">
+        <button id="prevDay" class="round-button" type="button" aria-label="Previous day">&lsaquo;</button>
+        <div id="dayTabs" class="day-tabs" role="tablist"></div>
+        <div class="actions">
+          <button id="nextDay" class="round-button" type="button" aria-label="Next day">&rsaquo;</button>
+          <button id="resetProgress" type="button">Reset day</button>
+        </div>
+      </section>
+
+      <section id="schedule" class="schedule" aria-live="polite"></section>
+
+      <section id="special-instructions" class="instructions" aria-labelledby="specialTitle">
+        <div class="section-heading">
+          <p class="eyebrow">Reference</p>
+          <h2 id="specialTitle">Special instructions</h2>
+        </div>
+
+        <div class="instruction-panel">
+          <p>
+            Steps to stop the service, get the remaining files from the DM work file, and manually concatenate the error file.
+          </p>
+
+          <ol class="instruction-list">
+            <li>Stop the <code>TSA.SERVICE</code> record for the specific DM service. Under the running services, using <code>COS TSS.LIST</code>, find the ID of the running DM service.</li>
+            <li>Stop the <code>DM.SERVICE.CONTROL</code> DSC of the running service.</li>
+            <li>
+              Get the unprocessed pending records from the DM service work file, <code>F.DM.SERVICE.DATA.FILE</code>. Directly from the database, using SSMS or DbBeaver, run:
+              <pre><code>SELECT * FROM F_DM_SERVICE_DATA_F000</code></pre>
+            </li>
+            <li>Export the result to CSV and share it with Aspire.</li>
+            <li>
+              Concatenate the error files manually. In the directory where the file is placed, run:
+              <pre><code>cat APC.R23.FTNOS#LOG.* &gt; APC.R23.FTNOS-ERROR.YYMMDD.txt</code></pre>
+            </li>
+            <li>
+              Clean up the <code>F.DM.SERVICE.DATA.FILE</code> and the <code>JOB.LIST</code> related to the service.
+              <ol>
+                <li>Run <code>JQL CLEAR-FILE F.DM.SERVICE.DATA.FILE</code> after steps 3 and 4 are completed.</li>
+                <li>Run <code>JQL LIST-ITEM F.LOCKING WITH @ID LIKE ...JOB...</code>.</li>
+                <li>Choose the Job List associated with the DM service. Confirm by running <code>LIST-ITEM F.JOB.LIST.x</code>.</li>
+                <li>Run <code>JQL CLEAR-FILE F.JOB.LIST.x</code>.</li>
+                <li>Run <code>JED F.LOCKING F.JOB.LIST.x</code>, then press <code>d</code> and then <code>Y</code>.</li>
+              </ol>
+            </li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <template id="dayTemplate">
+      <article class="day-card">
+        <button class="day-summary" type="button">
+          <span>
+            <span class="day-name"></span>
+            <span class="date-line"></span>
+          </span>
+          <span class="file-chip"></span>
+          <span class="progress-pill"></span>
+        </button>
+        <div class="day-content"></div>
+      </article>
+    </template>
+
+    <template id="slotTemplate">
+      <section class="slot">
+        <div class="slot-time">
+          <span class="primary-time"></span>
+          <span class="secondary-time"></span>
+        </div>
+        <ol class="task-list"></ol>
+      </section>
+    </template>
+
+    <template id="taskTemplate">
+      <li class="task-item">
+        <label>
+          <input type="checkbox">
+          <span></span>
+        </label>
+      </li>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
